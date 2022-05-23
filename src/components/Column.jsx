@@ -26,7 +26,7 @@ export default class Column extends React.Component {
                 <Title>{this.props.column.title}</Title>
                 <Droppable
                     droppableId={this.props.column.id}
-                    isDropDisabled={this.props.column.isDropDisabled}
+                    isDropDisabled={this.props.column.taskIds.length >= 2 ? true : false}
                 >
                     {(provided) => (
                         <TaskList
