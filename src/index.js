@@ -5,6 +5,8 @@ import Column from './components/Column';
 import reportWebVitals from './reportWebVitals';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
+import axios from 'axios';
+import config from './config';
 
 const Container = styled.div`
     display: flex;
@@ -12,8 +14,12 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
 `;
+
 class App extends React.Component {
-    state = initialData;
+    constructor(props) {
+        super(props);
+        this.state = initialData;
+    }
 
     onDragEnd = result => {
         const { destination, source, draggableId } = result;
@@ -74,6 +80,28 @@ class App extends React.Component {
             }
         }
         this.setState(newState);
+    };
+
+    componentDidMount() {
+        axios.get(`${config.API_SERVER_URL}candidates`)
+            .then(response => {
+                let candidates = response.data.candidates
+                candidates.forEach((element, index) => {
+                    candidates[index].id = 'task-' + element.id;
+                });
+                const columnIds = candidates.map(obj => obj.id)
+
+                let newStateColumn = { ...this.state.columns }
+                newStateColumn['column-1'].taskIds = columnIds
+
+                this.setState({
+                    tasks: candidates,
+                    columns: newStateColumn
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
     };
 
     render() {
